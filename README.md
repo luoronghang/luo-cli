@@ -1,2 +1,2 @@
 # seven
-The front-end tools
+The front-end project 
