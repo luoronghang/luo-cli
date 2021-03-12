@@ -1,0 +1,37 @@
+{
+  "name": "seven-cli",
+  "version": "1.0.0",
+  "description": "A Front end project generator",
+  "main": "index.js",
+  "bin": {
+    "seven": "bin/seven",
+    "seven-init": "bin/seven-init",
+    "seven-update": "bin/seven-update"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luoronghang/seven-cli.git"
+  },
+  "keywords": [
+    "vue",
+    "react",
+    "tools"
+  ],
+  "author": "Luoronghang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luoronghang/seven-cli/issues"
+  },
+  "homepage": "https://github.com/luoronghang/seven-cli#readme",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^7.1.0",
+    "fs-extra": "^9.1.0",
+    "inquirer": "^8.0.0",
+    "ora": "^5.3.0",
+    "rimraf": "^3.0.2"
+  }
+}

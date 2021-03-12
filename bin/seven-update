@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+require('commander')
+  .version(require('../package.json').version)
+  .usage('<command> [options]')
+  .command('init', 'init a new project')
+  .command('dev', 'develop your project')
+  .command('build', 'build your project')
+  .command('lint', 'lint your project')
+  .parse(process.argv);
