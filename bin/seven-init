@@ -4,7 +4,9 @@ const program = require('commander'),
       chalk = require('chalk'),
       path = require('path'),
       fs = require('fs'),
+      ora = require('ora'),
       fse = require('fs-extra'),
+      child_process = require('child_process'),
       exists = require('fs').existsSync,
       inquirer = require('inquirer');
 
@@ -13,10 +15,29 @@ const program = require('commander'),
  * 2、input:输入项目名称，并校验项目名称是否存在
  * 3、list:选择框架类型
  * 4、接受用户输入（项目名称和框架类型），执行项目创建
- *    基于目前的cp还是 git donwload ？
- * 5、安装 npm 包
+ *    基于目前的 cp 还是 git donwload ？,暂定cp方式
+ * 5、安装 npm 包 ???? 
  * 6、success！ 
  * **/
+
+//监听退出事件
+process.on('exit', function() {
+  console.log('已退出 seven init');
+});
+
+program.on('--help',function(){
+  console.log();
+  console.log('  Examples:')
+  console.log()
+  console.log(chalk.gray('    # create a new project'))
+  console.log('    $ seven init ${project-name}')
+  console.log()
+});
+
+//初始化项目所在目录
+const projectPath = process.cwd() + '/';
+//各项目包所在目录
+const packagePath = path.join(__dirname,'../packages/');
 
 //交互项
 const promptList = [
@@ -42,52 +63,63 @@ const promptList = [
 //parse输入的参数
 program.parse(process.argv);
 
-// console.log(program.args)
-// console.log(path.relative('../',process.cwd()))
+// console.log(!program.args[0] || program.args[0] === '.')
+// // console.log('path::::::::')
+// console.log(program.args[0])
+// console.log('path::::::::')
 
+//接收反馈
 inquirer.prompt(promptList).then(answers => {
   run(answers);
   console.log(answers)
 });
 
+//执行项目创建
 function run (answers){
   //check
-  const isExists = exists(process.cwd() + '/' + answers.name);
-  console.log(process.cwd() + '/' + answers.name);
+  const isExists = exists(projectPath + answers.name);
   if(isExists){
     console.log('项目已经存在，请使用其他名称！');
     process.exit(1)
     return;
   }
+  
   //create
-  const tplPath = process.cwd()+'/packages/' + answers.type; //此文件的执行目录，需要调整
-  const targetPath = process.cwd() + '/' + answers.name; //当前工作目录
+  const tplPath = packagePath + answers.type; 
+  const targetPath = projectPath + answers.name;
   console.log('模板目录::::::'+tplPath);
   console.log('目标目录::::::'+targetPath);
   fse.copy(tplPath,targetPath,{}).then(function(){
-    console.log('success!!');
+    console.log(answers.name +'初始化成功！');
+    // child_process.exec('cd',[answers.name],function(){
+    //   console.log('进入......');
+    //   installDependencies();
+    // })
+    // installDependencies();
   }).catch(function(){
+    process.exit(1)
     console.log('fail!!');
   })
 }
 
-//监听退出事件
-process.on('exit', function() {
-  console.log('已退出 seven init');
-});
-
-program.on('--help',function(){
-  console.log();
-  console.log('  Examples:')
-  console.log()
-  console.log(chalk.gray('    # create a new project'))
-  console.log('    $ seven init ${project-name}')
-  console.log()
-});
-
 //安装npm包依赖
 function installDependencies(){
-
+  const spinner = ora('npm install...\n');
+  spinner.start();
+  const installTask = child_process.spawn('npm',['install']);
+  installTask.stdout.on('data',function(data){
+    console.log(`stdout: ${data}`);
+  });
+  installTask.stderr.on('data',function(data){
+    console.log(`stderr: ${data}`);
+  });
+  installTask.on('close',function(code){
+    spinner.stop();
+    console.log(`安装npm子进程退出，退出码 ${code}`);
+    if(code==0){
+      console.log(`npm 安装成功！`);
+    }
+  });
 }
 
 //检查版本
