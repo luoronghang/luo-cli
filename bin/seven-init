@@ -16,7 +16,7 @@ const program = require('commander'),
  * 3、list:选择框架类型
  * 4、接受用户输入（项目名称和框架类型），执行项目创建
  *    基于目前的 cp 还是 git donwload ？,暂定cp方式
- * 5、安装 npm 包 ???? 
+ * 5、安装 npm 包 
  * 6、success！ 
  * **/
 
@@ -83,30 +83,24 @@ function run (answers){
     process.exit(1)
     return;
   }
-  
   //create
   const tplPath = packagePath + answers.type; 
   const targetPath = projectPath + answers.name;
   console.log('模板目录::::::'+tplPath);
   console.log('目标目录::::::'+targetPath);
   fse.copy(tplPath,targetPath,{}).then(function(){
-    console.log(answers.name +'初始化成功！');
-    // child_process.exec('cd',[answers.name],function(){
-    //   console.log('进入......');
-    //   installDependencies();
-    // })
-    // installDependencies();
+    console.log('项目：'+ answers.name +' 创建成功！');
+    installDependencies(answers.name);
   }).catch(function(){
     process.exit(1)
-    console.log('fail!!');
   })
 }
 
 //安装npm包依赖
-function installDependencies(){
+function installDependencies(projectName){
   const spinner = ora('npm install...\n');
   spinner.start();
-  const installTask = child_process.spawn('npm',['install']);
+  const installTask = child_process.spawn('npm',['install'],{cwd:projectName});
   installTask.stdout.on('data',function(data){
     console.log(`stdout: ${data}`);
   });
@@ -116,7 +110,10 @@ function installDependencies(){
   installTask.on('close',function(code){
     spinner.stop();
     console.log(`安装npm子进程退出，退出码 ${code}`);
-    if(code==0){
+    if(code!=0){
+      console.log('exitCode');
+      process.exitCode = code;
+    }else{
       console.log(`npm 安装成功！`);
     }
   });
