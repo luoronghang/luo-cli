@@ -89,6 +89,7 @@ function run (answers){
   console.log('模板目录::::::'+tplPath);
   console.log('目标目录::::::'+targetPath);
   fse.copy(tplPath,targetPath,{}).then(function(){
+    // Creating project in /Users/ronghangluo/dev-demo/mytest.
     console.log('项目：'+ answers.name +' 创建成功！');
     installDependencies(answers.name);
   }).catch(function(){
@@ -119,7 +120,7 @@ function installDependencies(projectName){
   });
 }
 
-//检查版本
+//检查脚手架版本
 function checkVersion(){
 
 }
