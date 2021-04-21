@@ -4,16 +4,16 @@
   "description": "A Front end project generator",
   "main": "index.js",
   "bin": {
-    "seven": "bin/seven",
-    "seven-init": "bin/seven-init",
-    "seven-update": "bin/seven-update"
+    "luo": "bin/luo",
+    "luo-init": "bin/luo-init",
+    "luo-update": "bin/luo-update"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luoronghang/seven-cli.git"
+    "url": "git+https://github.com/luoronghang/luo-cli.git"
   },
   "keywords": [
     "vue",
@@ -23,9 +23,9 @@
   "author": "Luoronghang",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/luoronghang/seven-cli/issues"
+    "url": "https://github.com/luoronghang/luo-cli/issues"
   },
-  "homepage": "https://github.com/luoronghang/seven-cli#readme",
+  "homepage": "https://github.com/luoronghang/luo-cli#readme",
   "dependencies": {
     "chalk": "^4.1.0",
     "commander": "^7.1.0",
