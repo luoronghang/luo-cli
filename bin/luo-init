@@ -13,20 +13,25 @@ const program = require('commander'),
       inquirer = require('inquirer');
 
 const localPackageConfig = require('../package.json');
+const logger = require('../lib/logger');
 
 /**
- * 1、npm init
+ * 1、luo init
  * 2、input:输入项目名称，并校验项目名称是否存在
- * 3、list:选择框架类型
+ * 3、list:提示选择框架类型(vue2 or vue3 or react or nodejs)
  * 4、接受用户输入（项目名称和框架类型），执行项目创建
- *    基于目前的 cp 还是 git donwload ？,暂定cp方式
+ *    基于目前的 cp 还是 git donwload ？,目前确定以cp方式
  * 5、安装 npm 包 
  * 6、success！ 
  * **/
 
+//  logger.fatal('test!!!!!!')
+
 //监听退出事件
-process.on('exit', function() {
-  console.log('已退出 seven init');
+process.on('exit', function(code) {
+  if(code!=0){
+    logger.fatal(`已退出 luo init 退出code:${code}`)
+  }
 });
 
 program.on('--help',function(){
@@ -34,7 +39,7 @@ program.on('--help',function(){
   console.log('  Examples:')
   console.log()
   console.log(chalk.gray('    # create a new project'))
-  console.log('    $ seven init ${project-name}')
+  console.log('    $ luo init ${project-name}')
   console.log()
 });
 
@@ -49,7 +54,7 @@ const promptList = [
     type: 'input',
     message: '请输入项目名称:',
     name: 'name',
-    default: "seven_project_init" // 默认值
+    default: "luo_project_init" // 默认值
   },
   {
     type: 'list',
@@ -75,7 +80,7 @@ program.parse(process.argv);
 //接收反馈
 inquirer.prompt(promptList).then(answers => {
   run(answers);
-  console.log(answers)
+  // console.log(answers)
 });
 
 //执行项目创建
@@ -83,7 +88,7 @@ function run (answers){
   //check
   const isExists = exists(projectPath + answers.name);
   if(isExists){
-    console.log('项目已经存在，请使用其他名称！');
+    logger.fatal('项目已经存在，请使用其他名称！')
     process.exit(1)
     return;
   }
@@ -94,8 +99,7 @@ function run (answers){
     console.log('模板目录::::::'+tplPath);
     console.log('目标目录::::::'+targetPath);
     fse.copy(tplPath,targetPath,{}).then(function(){
-      // Creating project in /Users/ronghangluo/dev-demo/mytest.
-      console.log('项目：'+ answers.name +' 创建成功！');
+      logger.success(`项目：${answers.name} 创建成功~`)
       installDependencies(answers.name);
     }).catch(function(){
       process.exit(1)
@@ -121,7 +125,7 @@ function installDependencies(projectName){
       console.log('exitCode');
       process.exitCode = code;
     }else{
-      console.log(`npm 安装成功！`);
+      logger.success('npm 依赖包 安装成功!')
     }
   });
 }
