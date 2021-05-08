@@ -8,12 +8,11 @@ const program = require('commander'),
       fse = require('fs-extra'),
       child_process = require('child_process'),
       exists = require('fs').existsSync,
-      axios = require('axios'),
-      semver = require('semver'),
       inquirer = require('inquirer');
 
-const localPackageConfig = require('../package.json');
 const logger = require('../lib/logger');
+const prompts = require('../lib/init/prompts');
+const checkVersion = require('../lib/checkVersion');
 
 /**
  * 1、luo init
@@ -25,15 +24,14 @@ const logger = require('../lib/logger');
  * 6、success！ 
  * **/
 
-//  logger.fatal('test!!!!!!')
-
 //监听退出事件
 process.on('exit', function(code) {
   if(code!=0){
-    logger.fatal(`已退出 luo init 退出code:${code}`)
+    logger.fatal(`已退出 luo init code:${code}`)
   }
 });
 
+//help
 program.on('--help',function(){
   console.log();
   console.log('  Examples:')
@@ -48,39 +46,17 @@ const projectPath = process.cwd() + '/';
 //各项目包所在目录
 const packagePath = path.join(__dirname,'../packages/');
 
-//交互项
-const promptList = [
-  {
-    type: 'input',
-    message: '请输入项目名称:',
-    name: 'name',
-    default: "luo_project_init" // 默认值
-  },
-  {
-    type: 'list',
-    message: '请选择项目类型:',
-    name: 'type',
-    choices:[
-      'vue2',
-      'vue3',
-      'react',
-      'nodejs'
-    ]
-  }
-];
-
 //parse输入的参数
 program.parse(process.argv);
 
 // console.log(!program.args[0] || program.args[0] === '.')
-// // console.log('path::::::::')
+// console.log('path::::::::')
 // console.log(program.args[0])
 // console.log('path::::::::')
 
 //接收反馈
-inquirer.prompt(promptList).then(answers => {
+inquirer.prompt(prompts).then(answers => {
   run(answers);
-  // console.log(answers)
 });
 
 //执行项目创建
@@ -128,25 +104,4 @@ function installDependencies(projectName){
       logger.success('npm 依赖包 安装成功!')
     }
   });
-}
-
-//检查脚手架版本
-function checkVersion(done){
-  axios.get('https://registry.npmjs.org/@luoronghang/cli')
-  .then(function(res){
-    if(res.status ===200){
-      const latestVersion = res.data['dist-tags'].latest;
-      const localVersion = localPackageConfig.version;
-      if(semver.lt(localVersion,latestVersion)){
-        console.log(chalk.yellow('  A newer version is available'));
-        console.log();
-        console.log('  latest:     ' + chalk.green(latestVersion));
-        console.log('  installed:  ' + chalk.red(localVersion));
-        console.log();
-      }
-    }
-    done();
-  }).catch(function(err){
-    done();
-  })
 }
