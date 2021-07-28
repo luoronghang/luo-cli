@@ -1,6 +1,7 @@
 {
     "name": "vue2",
     "version": "1.0.0",
+    "projectType":"vue2",
     "description": "vue2",
     "main": "./app/app.js",
     "scripts": {

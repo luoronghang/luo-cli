@@ -1,10 +1,44 @@
 #!/usr/bin/env node
 
-require('commander')
-  .version(require('../package.json').version)
-  .usage('<command> [options]')
-  .command('init', 'init a new project')
-  .command('dev', 'develop your project')
-  .command('build', 'build your project')
-  .command('lint', 'lint your project')
-  .parse(process.argv);
+const program = require('commander'),
+      chalk = require('chalk'),
+      path = require('path'),
+      fs = require('fs'),
+      ora = require('ora'),
+      fse = require('fs-extra'),
+      child_process = require('child_process'),
+      exists = require('fs').existsSync,
+      inquirer = require('inquirer');
+
+const logger = require('../lib/logger');
+const prompts = require('../lib/init/prompts');
+const checkVersion = require('../lib/checkVersion');
+
+//项目所在目录
+const projectPath = process.cwd() + '/';
+//各项目包所在目录
+const packagePath = path.join(__dirname,'../packages/');
+
+/*
+1、luo update
+2、校验项目类型是否正常，如：vue2 or react
+3、逐个按需更新文件
+4、判断需要 重新安装npm 包，则执行 npm install
+5、提示更新成功
+*/
+
+update();
+
+function update() {
+  //create
+  const tplPath = packagePath + answers.type; 
+  const targetPath = projectPath + answers.name;
+  console.log('模板目录::::::'+tplPath);
+  console.log('目标目录::::::'+targetPath);
+  fse.copy(tplPath,targetPath,{}).then(function(){
+    logger.success(`项目：${answers.name} 创建成功~`)
+    installDependencies(answers.name);
+  }).catch(function(){
+    process.exit(1)
+  })
+}
